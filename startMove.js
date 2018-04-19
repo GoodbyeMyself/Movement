@@ -2,8 +2,8 @@
  * 完美运动框架
  * @param {HTMLElement} element 运动对象
  * @param {JSON}        json    属性：目标值      
- * @property {String} attr    属性值
- * @config   {Number} target  目标值
+ * @property {String}   attr    属性值
+ * @config   {Number}   target  目标值
  * @param {function}    func    可选，回调函数，链式动画。
  */
 function startMove(element, json, func) {
@@ -47,8 +47,8 @@ function startMove(element, json, func) {
 /**
  * 获取实际样式函数
  * @param   {HTMLElement}   element  需要寻找的样式的html节点
- * @param   {String]} attr 在对象中寻找的样式属性
- * @returns {String} 获取到的属性
+ * @param   {String]}       attr     在对象中寻找的样式属性
+ * @returns {String}    获取到的属性
  */
 function getStyle(element, attr) {
     //IE写法

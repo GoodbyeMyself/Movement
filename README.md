@@ -25,9 +25,9 @@
  1. 设置元素为绝对定位，只有绝对定位后，left,top等值才生效。
  2. 定时器的使用（动态改变值），这里使用setInterval()每隔指定的时间执行代码：
 
-        -计时器setInterval(函数,交互时间(毫秒))：在执行时,从载入页面后每隔指定的时间执行代码。
+        计时器 setInterval(函数,交互时间(毫秒))：在执行时,从载入页面后每隔指定的时间执行代码。
 
-        -取消计时器clearInterval(函数) 方法可取消由 setInterval() 设置的交互时间。
+        取消计时器 clearInterval(函数) 方法可取消由 setInterval() 设置的交互时间。
         
  3. 获取当前的位置，大小等等。offsetLeft（当前元素相对父元素位置）。
  4. 速度--物体运动的快慢因素【定时器间隔时间、改变值的大小】。
@@ -141,3 +141,50 @@ if (alpha === iTarget) {
     element.style.opacity = alpha / 100;//标准
 }
 ```
+
+## （二） 缓冲动画
+
+### 思考：怎么样才是缓冲动画？
+
+    应该有以下几点：
+
+        1.逐渐变慢,最后停止
+
+        2.距离越远速度越大
+
+            速度由距离决定
+
+            速度=(目标值-当前值)/缩放系数
+
+        3.Bug :速度取整(使用Math方法)，不然会闪
+
+            向上取整。Math.ceil(iSpeed)
+
+            向下取整。Math.floor(iSpeed)
+
+还是对速度作文章：
+
+``` javascript
+/**
+ * 运动框架-4-缓冲动画
+ */
+function startMove(element, iTarget) {
+    clearInterval(timer);
+    timer = setInterval(function () {
+    //因为速度要动态改变，所以必须放在定时器中
+        var iSpeed = (iTarget - element.offsetLeft) / 10; //(目标值-当前值)/缩放系数=速度
+        iSpeed = iSpeed > 0 ? Math.ceil(iSpeed) : Math.floor(iSpeed); //速度取整
+        if (element.offsetLeft === iTarget) {//结束运动
+            clearInterval(timer);
+        } else {
+            element.style.left = element.offsetLeft + iSpeed + "px";
+        }
+    }, 30);
+}
+```
+
+做到这里，（速度取到某些值会无法停止)这个Bug就自动解决啦！
+
+#### 例子:缓冲菜单【跟随页面滚动的缓冲侧边栏】 [演示地址](https://codepen.io/guowen921/pen/rxLOMd%20)
+
+

@@ -70,7 +70,7 @@ function startMove(element, iTarget) {
 
 就这样是不是就完成了呢？已经ok了呢？ no~no~no~ 还有一些Bug需要处理。
 
-####运动中的BUG
+#### 运动中的BUG
 
       1.速度取到某些值会无法停止
 
@@ -80,7 +80,7 @@ function startMove(element, iTarget) {
 
       4.速度无法更改
 
-####解决BUG
+#### 解决BUG
 
     1.速度取到某些值会无法停止（这个Bug稍后解决，在进化过程中自然解决）
 

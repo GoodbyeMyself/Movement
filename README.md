@@ -54,8 +54,8 @@ function startMove(element) {
 ``` javascript
 /**
  * 运动框架-2-运动终止
- * @param {HTMLElement} element 进行运动的节点
- * @param {number}      iTarget 运动终止条件。
+ * @param {HTMLElement} element  进行运动的节点
+ * @param {number}      iTarget  运动终止条件。
  */
 var timer = null;
 function startMove(element, iTarget) {
@@ -89,3 +89,55 @@ function startMove(element, iTarget) {
     3.在开始运动时,关闭已有定时器
 
     4.把速度用变量保存
+    
+``` javascript
+/**
+ * 运动框架-3-解决Bug
+ */
+var timer = null;
+function startMove(element, iTarget) {
+    clearInterval(timer);//在开始运动时,关闭已有定时器
+    timer = setInterval(function () {
+        var iSpeed = 5;//把速度用变量保存
+        //把运动和停止隔开(if/else)
+        if (element.offsetLeft === iTarget) {//结束运动
+            clearInterval(timer);
+        } else {
+            element.style.left = element.offsetLeft + iSpeed + "px";
+        }
+    }, 30);
+}
+```
+
+这样一个简单的运动框架就完成了。但是，再等等。只能向右走？别急，我们不是定义了把速度变成为了变量吗？只需要对它进行一些处理就行啦！
+
+> var iSpeed = 5;
+
+``` javascript
+//判断距离目标位置，达到自动变化速度正负
+var iSpeed = 0;
+if (element.offsetLeft < iTarget) {
+    iSpeed = 5;
+} else {
+    iSpeed = -5;
+}
+```
+
+### 透明度动画
+
+    1.用变量alpha储存当前透明度。
+
+    2.把上面的element.offsetLeft改成变量alpha。
+
+    3.运动和停止条件部分进行更改。如下：
+    
+``` javascript
+//透明度浏览器兼容实现
+if (alpha === iTarget) {
+    clearInterval(time);
+} else {
+    alpha += speed;
+    element.style.filter = 'alpha(opacity:' + alpha + ')'; //兼容IE
+    element.style.opacity = alpha / 100;//标准
+}
+```

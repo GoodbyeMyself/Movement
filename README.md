@@ -293,6 +293,66 @@ function startMove(element, attr, iTarget) {
 }
 ```
 
+试一试，这样是不是就可以了呢？
+
+> 还记得上面我们写的透明度变化吗? 再试试
+
+果然还是不行， （废话，你见过透明度有"px"单位的么? - -白眼 ）
+
+### 第三步：透明度兼容处理
+
+#### 思考：需要对那些属性进行修改？
+
+    1.判断attr是不是透明度属性opacity 。
+
+    2.对于速度进行处理。
+
+        · 为透明度时，由于获取到的透明度会是小数，所以需要 * 100
+
+        · 并且由于计算机储存浮点数的问题，还需要将小数，进行四舍五入为整数。使用：Math.round(parseFloat(getStyle(element, attr)) * 100)。
+        
+        · 否则，继续使用默认的速度。
+
+    3.对结果输出部分进行更改。
+
+        · 判断是透明度属性，使用透明度方法
+
+        · 否则，使用使用默认的输出格式。
+
+``` javascript
+
+/**
+ * 运动框架-5-兼容透明度
+ * @param {HTMLElement} element 运动对象
+ * @param {string}      attr    需要改变的属性。
+ * @param {number}      iTarget 目标值
+ */
+function startMove(element, attr, iTarget) {
+    clearInterval(element.timer);
+    element.timer = setInterval(function () {
+        //因为速度要动态改变，所以必须放在定时器中
+        var iCurrent = 0;
+        if (attr === "opacity") { //为透明度时执行。
+            iCurrent = Math.round(parseFloat(getStyle(element, attr)) * 100);
+        } else { //默认情况
+            iCurrent = parseInt(getStyle(element, attr)); //实际样式大小
+        }
+        var iSpeed = (iTarget - iCurrent) / 10; //(目标值-当前值)/缩放系数=速度
+        iSpeed = iSpeed > 0 ? Math.ceil(iSpeed) : Math.floor(iSpeed); //速度取整
+        if (iCurrent === iTarget) {//结束运动
+            clearInterval(element.timer);
+        } else {
+            if (attr === "opacity") { //为透明度时，执行
+                element.style.filter = "alpha(opacity:" + (iCurrent + iSpeed) + ")"; //IE
+                element.style.opacity = (iCurrent + iSpeed) / 100; //标准
+            } else { //默认
+                element.style[attr] = iCurrent + iSpeed + "px";
+            }
+        }
+    }, 30);
+}
+```
+
 
 
 

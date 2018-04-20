@@ -207,4 +207,87 @@ function startMove(element, iTarget) {
 
 就这样就行啦！
 
+## （四） 任意值变化
+
+咳咳。我们来给div加个1px的边框。boder :1px solid #000
+
+然后来试试下面的代码
+
+``` javascript
+/**
+ * 运动框架-4-缓冲动画
+ */
+setInterval(function () {
+    oDiv.style.width = oDiv.offsetWidth - 1 + "px";
+}, 30) 
+```
+嗯，神奇的事情发生了！what？设置的不是宽度在减吗？怎么尼玛增加了！ 不对啊，大兄弟。
+
+究竟哪里出了问题呢？
+
+一起找找资料，看看文档，原来offset这一系列的属性都会存在，被其他属性干扰的问题。
+
+好吧，既然不能用，那么就顺便把任意值变化给做了吧。
+
+### 第一步：获取实际样式
+
+> 使用offsetLeft..等获取样式时, 若设置了边框, padding, 等可以改变元素宽度高度的属性时会出现BUG..
+
+· 通过查找发现element.currentStyle(attr)可以获取计算过之后的属性。
+· 但是因为兼容性的问题，需封装getStyle函数。（万恶的IE）
+· 当然配合CSS的box-sizing属性设为border-box可以达到一样的效果 ? (自认为，未验证)。
+
+``` javascript
+/**
+ * 获取实际样式函数
+ * @param   {HTMLElement}   element  需要寻找的样式的html节点
+ * @param   {String]}       attr     在对象中寻找的样式属性
+ * @returns {String}                 获取到的属性
+ */
+function getStyle(element, attr) {
+    //IE写法
+    if (element.currentStyle) {
+        return element.currentStyle[attr];
+    //标准
+    } else {
+        return getComputedStyle(element, false)[attr];
+    }
+}
+```
+### 第二步：改造原函数
+
+1.添加参数，attr表示需要改变的属性值。
+2.更改element.offsetLeft为getStyle(element, attr)。
+    >需要注意的是：getStyle(element, attr)不能直接使用，因为它获取到的字符串,例：10px。
+    > 变量iCurrent使用parseInt(),将样式转成数字。
+    
+3.element.style.left为element.style[attr]。
+
+``` javascript
+/**
+ * 运动框架-4-任意值变化
+ * @param {HTMLElement} element 运动对象
+ * @param {string}      attr    需要改变的属性。
+ * @param {number}      iTarget 目标值
+ */
+function startMove(element, attr, iTarget) {
+    clearInterval(element.timer);
+    element.timer = setInterval(function () {
+    //因为速度要动态改变，所以必须放在定时器中
+    var iCurrent=0;
+    iCurrent = parseInt(getStyle(element, attr));       //实际样式大小
+        var iSpeed = (iTarget - iCurrent) / 10;         //(目标值-当前值)/缩放系数=速度
+        iSpeed = iSpeed > 0 ? Math.ceil(iSpeed) : Math.floor(iSpeed); //速度取整
+        if (iCurrent === iTarget) {//结束运动
+            clearInterval(element.timer);
+        } else {
+            element.style[attr] = iCurrent + iSpeed + "px";
+        }
+    }, 30);
+}
+```
+
+
+
+
 

@@ -233,9 +233,9 @@ setInterval(function () {
 
 > 使用offsetLeft..等获取样式时, 若设置了边框, padding, 等可以改变元素宽度高度的属性时会出现BUG..
 
-· 通过查找发现element.currentStyle(attr)可以获取计算过之后的属性。
-· 但是因为兼容性的问题，需封装getStyle函数。（万恶的IE）
-· 当然配合CSS的box-sizing属性设为border-box可以达到一样的效果 ? (自认为，未验证)。
+通过查找发现element.currentStyle(attr)可以获取计算过之后的属性。
+但是因为兼容性的问题，需封装getStyle函数。（万恶的IE）
+当然配合CSS的box-sizing属性设为border-box可以达到一样的效果 ? (自认为，未验证)。
 
 ``` javascript
 /**
@@ -258,8 +258,9 @@ function getStyle(element, attr) {
 
 1.添加参数，attr表示需要改变的属性值。
 2.更改element.offsetLeft为getStyle(element, attr)。
-    >需要注意的是：getStyle(element, attr)不能直接使用，因为它获取到的字符串,例：10px。
-    > 变量iCurrent使用parseInt(),将样式转成数字。
+
+>需要注意的是：getStyle(element, attr)不能直接使用，因为它获取到的字符串,例：10px。
+> 变量iCurrent使用parseInt(),将样式转成数字。
     
 3.element.style.left为element.style[attr]。
 

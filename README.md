@@ -22,15 +22,15 @@
 
 ### 运动基础：如何让div动起来,如下：
 
- 1. 设置元素为绝对定位，只有绝对定位后，left,top等值才生效。
- 2. 定时器的使用（动态改变值），这里使用setInterval()每隔指定的时间执行代码：
+1. 设置元素为绝对定位，只有绝对定位后，left,top等值才生效。
+2. 定时器的使用（动态改变值），这里使用setInterval()每隔指定的时间执行代码：
 
-        计时器 setInterval(函数,交互时间(毫秒))：在执行时,从载入页面后每隔指定的时间执行代码。
+    计时器 setInterval(函数,交互时间(毫秒))：在执行时,从载入页面后每隔指定的时间执行代码。
 
-        取消计时器 clearInterval(函数) 方法可取消由 setInterval() 设置的交互时间。
+    取消计时器 clearInterval(函数) 方法可取消由 setInterval() 设置的交互时间。
         
- 3. 获取当前的位置，大小等等。offsetLeft（当前元素相对父元素位置）。
- 4. 速度--物体运动的快慢因素【定时器间隔时间、改变值的大小】。
+3. 获取当前的位置，大小等等。offsetLeft（当前元素相对父元素位置）。
+4. 速度--物体运动的快慢因素【定时器间隔时间、改变值的大小】。
  
 根据上面的信息我们就可以开始封装运动框架创建一个变化的div了。
 
@@ -234,7 +234,9 @@ setInterval(function () {
 > 使用offsetLeft..等获取样式时, 若设置了边框, padding, 等可以改变元素宽度高度的属性时会出现BUG..
 
 通过查找发现element.currentStyle(attr)可以获取计算过之后的属性。
+
 但是因为兼容性的问题，需封装getStyle函数。（万恶的IE）
+
 当然配合CSS的box-sizing属性设为border-box可以达到一样的效果 ? (自认为，未验证)。
 
 ``` javascript
@@ -257,6 +259,7 @@ function getStyle(element, attr) {
 ### 第二步：改造原函数
 
 1.添加参数，attr表示需要改变的属性值。
+
 2.更改element.offsetLeft为getStyle(element, attr)。
 
 >需要注意的是：getStyle(element, attr)不能直接使用，因为它获取到的字符串,例：10px。

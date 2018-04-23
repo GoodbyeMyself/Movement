@@ -215,6 +215,7 @@ function startMove(element, iTarget) {
 
 然后来试试下面的代码
 
+
 ``` javascript
 /**
  * 运动框架-4-缓冲动画
@@ -223,6 +224,7 @@ setInterval(function () {
     oDiv.style.width = oDiv.offsetWidth - 1 + "px";
 }, 30) 
 ```
+
 嗯，神奇的事情发生了！what？设置的不是宽度在减吗？怎么尼玛增加了！ 不对啊，大兄弟。
 
 究竟哪里出了问题呢？
@@ -320,7 +322,6 @@ function startMove(element, attr, iTarget) {
         · 否则，使用使用默认的输出格式。
 
 ``` javascript
-
 /**
  * 运动框架-5-兼容透明度
  * @param {HTMLElement} element 运动对象
@@ -352,6 +353,144 @@ function startMove(element, attr, iTarget) {
     }, 30);
 }
 ```
+
+到这里，这个运动框架就基本上完成了。但是，我们是追求完美的不是吗？
+
+继续进化！
+
+## （五）链式动画
+
+> 链式动画：顾名思义，就是在该次运动停止时，开始下一次运动。
+
+### 如何实现呢？
+
+    · 使用回调函数：运动停止时,执行函数
+
+    · 添加func形参（回调函数）。
+
+    · 在当前属性到达目的地时iCurrent === iTarget，判断是否有回调函数存在，有则执行。 
+  
+``` javascript
+if (iCurrent === iTarget) {//结束运动
+    clearInterval(element.timer);
+    if (func) {
+        func();//回调函数
+    }
+}
+```
+good，链式动画完成！距离完美还差一步！
+
+## （六）同时运动
+
+### 思考：如何实现同时运动？
+
+    应该有以下几点：
+
+        1.使用JSON传递多个值。
+        
+        2.使用for in循环，遍历属性，与值。
+        
+        3.定时器问题!(运动提前停止)
+        
+            在循环外设置变量,假设所有的值都到达了目的值为true
+            
+            在循环中检测是否到达目标值,若没有值未到则为false
+            
+            在循环结束后,检测是否全部达到目标值.是则清除定时器
+            
+     实现：
+     
+        1.删除attr与iTarget两个形参，改为json
+
+        2.在函数开始时，设置一个标记var flag = true; //假设所有运动到达终点.
+
+        3.在定时器内使用for in，遍历属性与目标，改写原来的attr与iTarget，为json的属性与值
+
+        4.修改运动终止条件，只有每一项的实际属性值iCurrent，等于目标值json[attr]时，flag才为true。清除定时器，判断是否回调。
+
+        5.否则，继续执行代码，直到所有属性值等于目标值。
+
+
+## 完美运动框架
+
+``` javascript
+/**
+ * 完美运动框架
+ * @param {HTMLElement} element 运动对象
+ * @param {JSON}        json    属性：目标值      
+ *   @property {String} attr    属性值
+ *   @config   {Number} target  目标值
+ * @param {function}    func    可选，回调函数，链式动画。
+ */
+function startMove(element, json, func) {
+    var flag = true; //假设所有运动到达终点.
+    clearInterval(element.timer);
+    element.timer = setInterval(function () {
+        for (var attr in json) {
+            //1.取当前的属性值。
+            var iCurrent = 0;
+            if (attr === "opacity") { //为透明度时执行。
+                iCurrent = Math.round(parseFloat(getStyle(element, attr)) * 100);
+            } else { //默认情况
+                iCurrent = parseInt(getStyle(element, attr)); //实际样式大小
+            }
+            //2.算运动速度,动画缓冲效果
+            var iSpeed = (json[attr] - iCurrent) / 10; //(目标值-当前值)/缩放系数=速度
+            iSpeed = iSpeed > 0 ? Math.ceil(iSpeed) : Math.floor(iSpeed); //速度取整
+
+            //3.未到达目标值时，执行代码 
+            if (iCurrent != json[attr]) {
+                flag = false; //终止条件
+                if (attr === "opacity") { //为透明度时，执行
+                    element.style.filter = "alpha(opacity:" + (iCurrent + iSpeed) + ")"; //IE
+                    element.style.opacity = (iCurrent + iSpeed) / 100; //标准
+                } else { //默认
+                    element.style[attr] = iCurrent + iSpeed + "px";
+                }
+            } else {
+                flag = true;
+            }
+            //4. 运动终止，是否回调
+            if (flag) {
+                clearInterval(element.timer);
+                if (func) {
+                    func();
+                }
+            }
+        }
+    }, 30);
+}
+
+/**
+ * 获取实际样式函数
+ * @param   {HTMLElement}   element  需要寻找的样式的html节点
+ * @param   {String]} attr 在对象中寻找的样式属性
+ * @returns {String} 获取到的属性
+ */
+function getStyle(element, attr) {
+    //IE写法
+    if (element.currentStyle) {
+        return element.currentStyle[attr];
+        //标准
+    } else {
+        return getComputedStyle(element, false)[attr];
+    }
+}
+
+```
+
+## 运动框架总结
+
+|    框架                                   | 变化   |
+|   --------                                | -----:  |
+| startMove(element)                        | 运动 | 
+| startMove(element,iTarget)                | 匀速-->缓冲-->多物体 | 
+| startMove(element,attr,iTargrt)           | 任意值 | 
+| startMove(element,attr,iTargrt,func)      | 链式运动 | 
+| startMove(element,json,func)              | 多值(同时)-->完美运动框架 | 
+
+
+
 
 
 
